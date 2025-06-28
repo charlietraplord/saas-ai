@@ -1,0 +1,9 @@
+// filepath: d:\git\saas\saas-ai-agent\src\app\dashboard\agents\[agentId]\chat\page.tsx
+import { use } from 'react';
+import ChatPage from './chat-client';
+
+export default function Page({ params }: { params: { agentId: string } }) {
+  // Properly unwrap params in the server component
+  const agentId = use(Promise.resolve(params.agentId));
+  return <ChatPage agentId={agentId} />;
+}

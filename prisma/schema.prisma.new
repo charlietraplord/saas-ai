@@ -1,0 +1,95 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String?
+  email        String        @unique
+  password     String        // Required for credentials authentication
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  agents       Agent[]
+  chatMessages ChatMessage[]
+}
+
+model Tenant {
+  id           String        @id @default(cuid())
+  name         String
+  plan         String        @default("FREE")
+  users        User[]
+  agents       Agent[]
+  payments     Payment[]
+  usageRecords UsageRecord[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  amount    Float
+  paymentId String   @unique // PayFast payment ID
+  status    String // 'pending', 'completed', 'failed'
+  planId    String // The plan being purchased
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([paymentId])
+}
+
+model Agent {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  model        String        @default("gpt-3.5-turbo")
+  systemPrompt String        @default("You are a helpful AI assistant.")
+  createdBy    String
+  user         User          @relation(fields: [createdBy], references: [id])
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  chatMessages ChatMessage[]
+  usageRecords UsageRecord[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([tenantId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  from      String // 'user' or 'bot'
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([agentId])
+}
+
+model UsageRecord {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  agentId    String
+  agent      Agent    @relation(fields: [agentId], references: [id])
+  calls      Int      @default(0)
+  tokensUsed Int      @default(0)
+  cost       Float    @default(0)
+  date       DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([agentId])
+  @@index([date])
+}

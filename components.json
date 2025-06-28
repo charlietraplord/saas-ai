@@ -1,0 +1,32 @@
+{
+  "components": {
+    "ui": [
+      {
+        "name": "Button",
+        "description": "A reusable button component with customizable styles."
+      },
+      {
+        "name": "Input",
+        "description": "A reusable input component for forms."
+      },
+      {
+        "name": "Modal",
+        "description": "A modal component for displaying content in a dialog."
+      }
+    ],
+    "shared": [
+      {
+        "name": "Header",
+        "description": "The header component displayed on all pages."
+      },
+      {
+        "name": "Footer",
+        "description": "The footer component displayed on all pages."
+      },
+      {
+        "name": "Loader",
+        "description": "A loading spinner component."
+      }
+    ]
+  }
+}

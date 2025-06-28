@@ -1,0 +1,5 @@
+import ChatLayout from './layout';
+
+export default function Page({ params }: { params: { agentId: string } }) {
+  return <ChatLayout params={params} />;
+}
